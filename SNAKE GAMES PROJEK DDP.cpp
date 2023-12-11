@@ -1,182 +1,213 @@
-#include <conio.h> 
-#include <iostream> 
+#include <iostream>
 #include <windows.h> 
-using namespace std; 
 
+#define batas_atas 2
+#define batas_bawah 23
+#define batas_samping 2
+#define batas_samping_k 78
+using namespace std;
 
-const int width = 80; 
-const int height = 20; 
+int iX(5), iY(5), x1 (4), y1 (4), xHapus(3), yHapus(3), veloX(1), veloY(0)
+,ekorsX[200], ekorsY[200], nEkor = 5, start = 0, makX, makY;
 
-int x, y; 
-int fruitCordX, fruitCordY; 
-int playerScore; 
-int snakeTailX[100], snakeTailY[100]; 
-int snakeTailLen; 
-enum snakesDirection { STOP = 0, LEFT, RIGHT, UP, DOWN }; 
-snakesDirection sDir; 
-bool isGameOver; 
-
-void GameInit() 
-{ 
-	isGameOver = false; 
-	sDir = STOP; 
-	x = width / 2; 
-	y = height / 2; 
-	fruitCordX = rand() % width; 
-	fruitCordY = rand() % height; 
-	playerScore = 0; 
-} 
-
-void GameRender(string playerName) 
-{ 
-	system("cls");
-
-	for (int i = 0; i < width + 2; i++) 
-		cout << "-"; 
-	cout << endl; 
-
-	for (int i = 0; i < height; i++) { 
-		for (int j = 0; j <= width; j++) { 
-			if (j == 0 || j == width) 
-				cout << "|"; 
-			if (i == y && j == x) 
-				cout << "O"; 
-			else if (i == fruitCordY && j == fruitCordX) 
-				cout << "#"; 
-			else { 
-				bool prTail = false; 
-				for (int k = 0; k < snakeTailLen; k++) { 
-					if (snakeTailX[k] == j 
-						&& snakeTailY[k] == i) { 
-						cout << "o"; 
-						prTail = true; 
-					} 
-				} 
-				if (!prTail) 
-					cout << " "; 
-			} 
-		} 
-		cout << endl; 
-	} 
-
-	for (int i = 0; i < width + 2; i++) 
-		cout << "-"; 
-	cout << endl; 
-
-	cout << playerName << "'s Score: " << playerScore 
-		<< endl; 
-} 
-
-void UpdateGame() 
-{ 
-	int prevX = snakeTailX[0]; 
-	int prevY = snakeTailY[0]; 
-	int prev2X, prev2Y; 
-	snakeTailX[0] = x; 
-	snakeTailY[0] = y; 
-
-	for (int i = 1; i < snakeTailLen; i++) { 
-		prev2X = snakeTailX[i]; 
-		prev2Y = snakeTailY[i]; 
-		snakeTailX[i] = prevX; 
-		snakeTailY[i] = prevY; 
-		prevX = prev2X; 
-		prevY = prev2Y; 
-	} 
-
-	switch (sDir) { 
-	case LEFT: 
-		x--; 
-		break; 
-	case RIGHT: 
-		x++; 
-		break; 
-	case UP: 
-		y--; 
-		break; 
-	case DOWN: 
-		y++; 
-		break; 
-	} 
-
-	if (x >= width || x < 0 || y >= height || y < 0) 
-		isGameOver = true; 
-
-	for (int i = 0; i < snakeTailLen; i++) { 
-		if (snakeTailX[i] == x && snakeTailY[i] == y) 
-			isGameOver = true; 
-	} 
-
-	if (x == fruitCordX && y == fruitCordY) { 
-		playerScore += 10; 
-		fruitCordX = rand() % width; 
-		fruitCordY = rand() % height; 
-		snakeTailLen++; 
-	} 
-} 
-
-int SetDifficulty() 
-{ 
-	int dfc, choice; 
-	cout << "\nSET DIFFICULTY\n1: Easy\n2: Medium\n3: hard "
-			"\nNOTE: if not chosen or pressed any other "
-			"key, the difficulty will be automatically set "
-			"to medium\nChoose difficulty level: "; 
-	cin >> choice; 
-	switch (choice) { 
-	case '1': 
-		dfc = 50; 
-		break; 
-	case '2': 
-		dfc = 100; 
-		break; 
-	case '3': 
-		dfc = 150; 
-		break; 
-	default: 
-		dfc = 100; 
-	} 
-	return dfc; 
-} 
-
-void UserInput() 
-{  
-	if (_kbhit()) { 
-		switch (_getch()) { 
-		case 'a': 
-			sDir = LEFT; 
-			break; 
-		case 'd': 
-			sDir = RIGHT; 
-			break; 
-		case 'w': 
-			sDir = UP; 
-			break; 
-		case 's': 
-			sDir = DOWN; 
-			break; 
-		case 'x': 
-			isGameOver = true; 
-			break; 
-		} 
-	} 
-} 
-
-int main() 
-{ 
-	string playerName; 
-	cout << "enter your name: "; 
-	cin >> playerName; 
-	int dfc = SetDifficulty(); 
-
-	GameInit(); 
-	while (!isGameOver) { 
-		GameRender(playerName); 
-		UserInput(); 
-		UpdateGame(); 
-		Sleep(dfc); 
-	} 
-
-	return 0; 
+void gotoxy(int x, int y)
+{
+COORD pos = {x, y};
+SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), pos);
 }
 
+void naik()
+{
+veloY = -1;
+veloX = 0;
+}
+
+void turun()
+{
+veloY = 1;
+veloX = 0;
+}
+
+void samping()
+{
+veloX = -1;
+veloY = 0;
+}
+
+void samping_k()
+{
+veloX = 1;
+veloY = 0;
+}
+
+void hapus()
+{
+gotoxy(xHapus, yHapus);
+cout << " ";
+}
+
+void ekor()
+{
+for(int j = 0; j <= 2; j++)
+{
+gotoxy(ekorsX[j], ekorsY[j]);
+cout << "+";
+}
+}
+
+void tampil()
+{
+gotoxy(iX, iY);
+cout << char(2);
+gotoxy(makX, makY);
+cout << "*";
+}
+
+void ganti_posisi()
+{
+xHapus = ekorsX[nEkor - 1];
+yHapus = ekorsY[nEkor - 1];
+for(int j = nEkor - 1; j >= 1; j--)
+{
+ekorsX[j] = ekorsX[j-1];
+ekorsY[j] = ekorsY[j-1];
+}
+ekorsX[0] = iX;
+ekorsY[0] = iY;
+}
+
+void velo()
+{
+ganti_posisi();
+hapus();
+iX += veloX;
+iY += veloY;
+tampil();
+ekor();
+}
+
+void trace()
+{
+for(int j = 0; j <= nEkor -1; j++)
+{
+cout << "x" << j << " y"<< j<< " = " << ekorsX[j] << "," << ekorsY[j];
+cout << " // " << iX << "," << iY << endl;
+}
+system("pause");
+system("cls");
+}
+
+bool isDestroy()
+{
+
+if(iX == batas_samping_k) { iX = 3; gotoxy(78, iY); cout << " "; }
+if(iX == batas_samping) { iX = 77; gotoxy(2, iY); cout << " "; }
+if(iY == batas_atas) { iY = 22; gotoxy(iX, 2); cout << " "; }
+if(iY == batas_bawah) { iY = 3; gotoxy(iX, 23); cout << " "; }
+//trace();
+for(int j = 0; j <= nEkor - 1; j++)
+if(ekorsX[j] == iX && ekorsY[j] == iY) return true;
+return false;
+}
+
+char getkey()
+{
+for(int i = 8; i <= 222; i++)
+{
+if(GetAsyncKeyState(i) == -32767)
+{
+switch(i)
+{
+case 38 : if(veloY != 1)naik();
+break;
+case 40 : if(veloY != -1)turun();
+break;
+case 37 : if(veloX != 1)samping();
+break; 
+case 39 : if(veloX != -1)samping_k();
+break;
+}
+}
+}
+}
+
+void random_makanan()
+{
+makX = rand()%(batas_samping_k - 1);
+if(makX < 4) makX += 3 + (4-makX);
+makY = rand()%(batas_bawah - 1);
+if(makY < 4) makY += 3 + (4-makY);
+gotoxy(makX, makY);
+cout << "*";
+}
+
+bool isEaten()
+{
+if(iX == makX && iY == makY) return true; else return false;
+}
+
+void cBorder() 
+{
+for(int i = 1; i <= 78; i++)
+{
+for(int j = 1; j <= 24; j += 23)
+{
+if(j > 1 || i >= 32)
+{
+gotoxy(i, j);cout << char(219);
+}
+}
+}
+for(int i = 1; i <= 24; i++)
+{
+for(int k = 1; k <= 80; k += 78)
+{
+gotoxy(k, i); cout << char(219);
+}
+}
+}
+
+void skor()
+{
+gotoxy(3,1); cout << "Skor : ";
+gotoxy(18,1); cout << "Panjang : ";
+}
+
+void tulis_skor()
+{
+gotoxy(11,1); cout << (nEkor - 5) * 10;
+gotoxy(28,1); cout << nEkor;
+}
+
+void inisialisasi()
+{
+cBorder();
+random_makanan();
+skor();
+tulis_skor();
+}
+
+int main()
+{
+string playerName; 
+cout << "enter your name: "; 
+cin >> playerName;
+system("cls");
+inisialisasi();
+while(!(isDestroy()))
+{
+velo();
+getkey();
+if(isEaten())
+{
+nEkor += 1;
+random_makanan();
+tulis_skor();
+}
+Sleep(100 - (nEkor / 10));
+}
+system("cls");
+gotoxy(32,12); cout << "Skor : " << (nEkor - 5) * 10;
+gotoxy(25,13);
+system("pause"); 
+}
